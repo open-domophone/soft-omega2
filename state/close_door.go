@@ -1,4 +1,4 @@
-package state_machine
+package state
 
 //import "encoding/json"
 
@@ -6,7 +6,6 @@ import (
 	"../message"
 )
 
-// Состояние - закрываем дверь - после всегда вешаем трубку
 type CloseDoor struct{
 	downPhone  *DownPhone
 }

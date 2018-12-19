@@ -2,7 +2,7 @@ package main
 
 import (
 	"./message"
-	state "./state_machine"
+	"./state"
 )
 
 func main() {

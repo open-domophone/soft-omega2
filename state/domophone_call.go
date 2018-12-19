@@ -1,4 +1,4 @@
-package state_machine
+package state
 
 //import "encoding/json"
 
@@ -7,7 +7,6 @@ import (
 	"fmt"
 )
 
-// Состояние 2. Начало вызова - задача информировать пользователя
 type DomophoneCall struct {
 	answer *AnswerPhone
 	wait  *WaitCall

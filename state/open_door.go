@@ -1,4 +1,4 @@
-package state_machine
+package state
 
 //import "encoding/json"
 
@@ -6,7 +6,7 @@ import (
 	"../message"
 )
 
-// Состояние - открываем дверь - после всегда переходим на закрытие двери
+
 type OpenDoor struct{
 	closeDoor *CloseDoor
 }
