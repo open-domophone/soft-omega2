@@ -4,9 +4,11 @@ package state
 
 import (
 	"../message"
+	"../domophone"
 )
 
 type AnswerPhone struct{
+	PhoneControl *domophone.Phone
 	openDoor  *OpenDoor
 	downPhone *DownPhone
 }
