@@ -1,20 +1,20 @@
 package domophone
 
 
-type Phone struct {
+type ControlPhone struct {
 	PinNumber int
 }
 
-func (self *Phone) Init() (error){
+func (self *ControlPhone) Init() (error){
 	return nil
 }
 
 // Поднять трубку
-func (self *Phone) Up() {
+func (self *ControlPhone) Up() {
 
 }
 
 // Опустить трубку
-func (self *Phone) Down() {
+func (self *ControlPhone) Down() {
 
 }

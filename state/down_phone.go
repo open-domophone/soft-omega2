@@ -4,26 +4,24 @@ package state
 
 import (
 	"../message"
-	"fmt"
+	"../domophone"
 )
 
 
-type DownPhone struct{
-	waitCall  *WaitCall
+type DownPhone struct {
+	ControlPhone *domophone.ControlPhone
+
+	stateWaitCall  *WaitCall
 }
 
 func (self *DownPhone) Init (waitCall *WaitCall) {
-	self.waitCall  = waitCall
+	self.stateWaitCall  = waitCall
 }
 
+// Опустить трубку и перейти и в ожидание
 func (self *DownPhone) Do(msg message.Message) (State, error) {
-	//if msg.Type == message.TYPE_LINE_DOMOPHONE {
-	//	lineMsg := message.MessageDomophoneLine{}
-	//	json.Unmarshal(msg.Data, &lineMsg)
-	//}
-	var state State = self
-	fmt.Println("DownPhone - 1")
+	var state State = self.stateWaitCall
+	self.ControlPhone.Down()
 	return state, nil
-	return nil, nil
 }
 

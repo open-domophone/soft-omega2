@@ -7,18 +7,19 @@ import (
 	"../domophone"
 )
 
-type AnswerPhone struct{
-	PhoneControl *domophone.Phone
-	openDoor  *OpenDoor
-	downPhone *DownPhone
+type UpPhone struct{
+	ControlPhone *domophone.ControlPhone
+
+	stateOpenDoor  *OpenDoor
+	stateDownPhone *DownPhone
 }
 
-func (self *AnswerPhone) Init (openDoor *OpenDoor, downPhone *DownPhone) {
-	self.openDoor  = openDoor
-	self.downPhone = downPhone
+func (self *UpPhone) Init (openDoor *OpenDoor, downPhone *DownPhone) {
+	self.stateOpenDoor  = openDoor
+	self.stateDownPhone = downPhone
 }
 
-func (self *AnswerPhone) Do(msg message.Message) (State, error) {
+func (self *UpPhone) Do(msg message.Message) (State, error) {
 	//if msg.Type == message.TYPE_LINE_DOMOPHONE {
 	//	lineMsg := message.MessageDomophoneLine{}
 	//	json.Unmarshal(msg.Data, &lineMsg)

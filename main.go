@@ -11,33 +11,36 @@ import (
 func main() {
 	var err error
 	// Подключаемся вебсокетом к серверу
-	websocket := network.WebsocketClient{}
+	var websocket = network.WebsocketClient{}
 	err = websocket.WSOpen("localhost:8080")
 	if err != nil {
 		fmt.Println("websocket:", err)
 	}
 
+	var controlPhone = &domophone.ControlPhone{}
+	var controlDoor  = &domophone.ControlDoor{}
+
 	// Описывается конечный автомат состояний устройства.
 	// состояние ожидание вызова
-	waitCall := &state.WaitCall{}
-	// состояние звонок
-	startCall := &state.StartCall{}
+	var waitCall = &state.WaitCall{}
+	// состояние звонок (в параметрах канал вебсокета - для отправки уведомления пользователю)
+	var startCall = &state.StartCall{UserNotif: websocket.SendData}
 	// состояние поднять трубку
-	answerPhone := &state.AnswerPhone{}
+	var upPhone = &state.UpPhone{ControlPhone: controlPhone}
 	// состояние положить трубку
-	downPhone := &state.DownPhone{}
+	var downPhone = &state.DownPhone{ControlPhone: controlPhone}
 	// состояние открыть дверь
-	openDoor := &state.OpenDoor{}
+	var openDoor = &state.OpenDoor{ControlDoor: controlDoor}
 	// состояние закрыть дверь
-	closeDoor := &state.CloseDoor{}
+	var closeDoor = &state.CloseDoor{ControlDoor: controlDoor}
 
 	// Связывание конечного автомата 
 	// с ожидания -> на вызов, либо -> опять на ожидание 
 	waitCall.Init(startCall)
 	// с вызова -> на снятие трубки, либо -> опять на ожидание.
-	startCall.Init(answerPhone, waitCall)
+	startCall.Init(upPhone, waitCall)
 	// со снятой трубки -> открытие двери, либо -> положить трбку.
-	answerPhone.Init(openDoor, downPhone)
+	upPhone.Init(openDoor, downPhone)
 	// с открытой двери -> в закрытие двери
 	openDoor.Init(closeDoor)
 	// с закрытия двери -> положить трубку

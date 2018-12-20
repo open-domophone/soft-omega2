@@ -1,25 +1,24 @@
 package state
 
-//import "encoding/json"
-
 import (
 	"../message"
+	"../domophone"
 )
 
 
-type OpenDoor struct{
-	closeDoor *CloseDoor
+type OpenDoor struct {
+	ControlDoor *domophone.ControlDoor
+
+	stateCloseDoor *CloseDoor
 }
 
 func (self *OpenDoor) Init (closeDoor *CloseDoor) {
-	self.closeDoor  = closeDoor
+	self.stateCloseDoor  = closeDoor
 }
 
+// открываем дверь и тут-же "закрываем"
 func (self *OpenDoor) Do(msg message.Message) (State, error) {
-	//if msg.Type == message.TYPE_LINE_DOMOPHONE {
-	//	lineMsg := message.MessageDomophoneLine{}
-	//	json.Unmarshal(msg.Data, &lineMsg)
-	//}
-	return nil, nil
+	self.ControlDoor.Open()
+	return self.stateCloseDoor, nil
 }
 

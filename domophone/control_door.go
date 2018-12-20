@@ -1,20 +1,20 @@
 package domophone
 
 // Управление дверью
-type Door struct {
+type ControlDoor struct {
 	PinNumber int
 }
 
-func (self *Door) Init() (error){
+func (self *ControlDoor) Init() (error){
 	return nil
 }
 
 // Открыть дверь
-func (self *Door) Open() {
+func (self *ControlDoor) Open() {
 
 }
 
 // Закрыть дверь
-func (self *Door) Close() {
+func (self *ControlDoor) Close() {
 
 }

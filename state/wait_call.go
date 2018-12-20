@@ -11,12 +11,11 @@ import (
 // Висим и слушаем сигнал с оптопары
 // При поступлении сигнала всегда идем в состояние "StartCall"
 type WaitCall struct{
-	startCall *StartCall
-	//call *State
+	stateStartCall *StartCall
 }
 
 func (self *WaitCall) Init (call *StartCall) {
-	self.startCall = call
+	self.stateStartCall = call
 }
 
 func (self *WaitCall) Do(msg message.Message) (State, error) {
@@ -26,7 +25,7 @@ func (self *WaitCall) Do(msg message.Message) (State, error) {
 	if lineMsg, ok := msg.(*message.DomophoneLine); ok {
 		if lineMsg.State == message.LINE_CALL {
 			fmt.Println("Фиксируем вызов (состояние: WaitCall)")
-			state = self.startCall
+			state = self.stateStartCall
 		}
 	}
 	return state, nil
