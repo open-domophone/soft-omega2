@@ -5,6 +5,6 @@ import (
 )
 
 type State interface {
-	Do(msg* message.Message) (State, error)
+	Do(msg message.Message) (State, error)
 }
 

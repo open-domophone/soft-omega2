@@ -15,7 +15,7 @@ func (self *OpenDoor) Init (closeDoor *CloseDoor) {
 	self.closeDoor  = closeDoor
 }
 
-func (self *OpenDoor) Do(msg* message.Message) (State, error) {
+func (self *OpenDoor) Do(msg message.Message) (State, error) {
 	//if msg.Type == message.TYPE_LINE_DOMOPHONE {
 	//	lineMsg := message.MessageDomophoneLine{}
 	//	json.Unmarshal(msg.Data, &lineMsg)

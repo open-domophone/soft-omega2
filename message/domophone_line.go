@@ -5,6 +5,6 @@ const (
 	LINE_CALL
 )
 
-type MessageDomophoneLine struct {
+type DomophoneLine struct {
 	State int `json:"state"`
 }

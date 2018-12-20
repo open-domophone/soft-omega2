@@ -17,7 +17,7 @@ func (self *DomophoneCall) Init (answer *AnswerPhone, wait *WaitCall) {
 	self.wait  = wait
 }
 
-func (self *DomophoneCall) Do(msg* message.Message) (State, error) {
+func (self *DomophoneCall) Do(msg message.Message) (State, error) {
 	var state State = self
 	fmt.Println("DomophoneCall - 1")
 	return state, nil

@@ -16,7 +16,7 @@ func (self *DownPhone) Init (waitCall *WaitCall) {
 	self.waitCall  = waitCall
 }
 
-func (self *DownPhone) Do(msg* message.Message) (State, error) {
+func (self *DownPhone) Do(msg message.Message) (State, error) {
 	//if msg.Type == message.TYPE_LINE_DOMOPHONE {
 	//	lineMsg := message.MessageDomophoneLine{}
 	//	json.Unmarshal(msg.Data, &lineMsg)
