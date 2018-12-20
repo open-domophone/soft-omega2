@@ -2,6 +2,8 @@ package domophone
 
 import (
 	"time"
+	"runtime"
+
 	"../message"
 )
 
@@ -20,6 +22,8 @@ func (self *CallDetect) Init(pinNumber int) error {
 			msg := &message.DomophoneLine{}
 			msg.State = message.LINE_CALL
 			self.State <- msg
+			// отдаю управление
+			runtime.Gosched()
 		}
 	}()
 	return nil
