@@ -2,18 +2,26 @@ package main
 
 import (
 	"fmt"
-
 	"./state"
 	"./message"
 	"./domophone"
+	"./network"
 )
 
 func main() {
+	var err error
+	// Подключаемся вебсокетом к серверу
+	websocket := network.WebsocketClient{}
+	err = websocket.WSOpen("localhost:8080")
+	if err != nil {
+		fmt.Println("websocket:", err)
+	}
+
 	// Описывается конечный автомат состояний устройства.
 	// состояние ожидание вызова
 	waitCall := &state.WaitCall{}
 	// состояние звонок
-	domophoneCall := &state.DomophoneCall{}
+	startCall := &state.StartCall{}
 	// состояние поднять трубку
 	answerPhone := &state.AnswerPhone{}
 	// состояние положить трубку
@@ -25,9 +33,9 @@ func main() {
 
 	// Связывание конечного автомата 
 	// с ожидания -> на вызов, либо -> опять на ожидание 
-	waitCall.Init(domophoneCall)
+	waitCall.Init(startCall)
 	// с вызова -> на снятие трубки, либо -> опять на ожидание.
-	domophoneCall.Init(answerPhone, waitCall)
+	startCall.Init(answerPhone, waitCall)
 	// со снятой трубки -> открытие двери, либо -> положить трбку.
 	answerPhone.Init(openDoor, downPhone)
 	// с открытой двери -> в закрытие двери
@@ -38,18 +46,20 @@ func main() {
 	downPhone.Init(waitCall)
 
 	// детектирование изменение GPIO - на предмет вызова
-	detectedCall := &domophone.CallDetect{}
-
-	detectedCall.Init(10)
+	сallDetect := &domophone.CallDetect{}
+	сallDetect.Init(10)
 
 	// Начальное состояние - ожидание вызова
 	var currentState state.State = waitCall
 	for {
 		var msg  message.Message
 		select {
-			case msg = <- detectedCall.State:
+			// состояние домофонной линии: есть вызов или нет
+			case msg = <- сallDetect.State:
+			// получение информации от сервера
+			case msg = <- websocket.RecvData:
 		}
 		fmt.Println(">>>")
 		currentState, _ = currentState.Do(msg)	
-	}	
+	}
 }
