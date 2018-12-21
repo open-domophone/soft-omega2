@@ -3,9 +3,8 @@ package state
 //import "encoding/json"
 
 import (
-	"../message"
-
 	"fmt"
+	"../message"
 )
 
 type StartCall struct {

@@ -38,3 +38,10 @@
 
 
 ```
+
+
+### Сборка под Omega2
+
+```
+GOOS=linux GOARCH=mipsle go build
+```

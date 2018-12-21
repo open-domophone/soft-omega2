@@ -2,12 +2,12 @@ package state
 
 import (
 	"../message"
-	"../domophone"
+	"../omega2/gpio"
 )
 
 
 type OpenDoor struct {
-	ControlDoor *domophone.ControlDoor
+	ControlDoor *gpio.Out
 
 	stateCloseDoor *CloseDoor
 }
@@ -18,7 +18,7 @@ func (self *OpenDoor) Init (closeDoor *CloseDoor) {
 
 // открываем дверь и тут-же "закрываем"
 func (self *OpenDoor) Do(msg message.Message) (State, error) {
-	self.ControlDoor.Open()
+	self.ControlDoor.HIGH()
 	return self.stateCloseDoor, nil
 }
 

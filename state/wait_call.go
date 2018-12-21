@@ -2,7 +2,7 @@ package state
 
 import (
 	"fmt"
-	"reflect"
+	//"reflect"
 
 	"../message"
 )
@@ -21,11 +21,11 @@ func (self *WaitCall) Init (call *StartCall) {
 func (self *WaitCall) Do(msg message.Message) (State, error) {
 	var state State = self
 
-	fmt.Println(reflect.TypeOf(msg))
+	//fmt.Println(reflect.TypeOf(msg))
 	if lineMsg, ok := msg.(*message.DomophoneLine); ok {
 		if lineMsg.State == message.LINE_CALL {
 			fmt.Println("Фиксируем вызов (состояние: WaitCall)")
-			state = self.stateStartCall
+			//state = self.stateStartCall
 		}
 	}
 	return state, nil

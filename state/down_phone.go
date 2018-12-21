@@ -4,12 +4,12 @@ package state
 
 import (
 	"../message"
-	"../domophone"
+	"../omega2/gpio"
 )
 
 
 type DownPhone struct {
-	ControlPhone *domophone.ControlPhone
+	ControlPhone *gpio.Out
 
 	stateWaitCall  *WaitCall
 }
@@ -21,7 +21,7 @@ func (self *DownPhone) Init (waitCall *WaitCall) {
 // Опустить трубку и перейти и в ожидание
 func (self *DownPhone) Do(msg message.Message) (State, error) {
 	var state State = self.stateWaitCall
-	self.ControlPhone.Down()
+	self.ControlPhone.LOW()
 	return state, nil
 }
 

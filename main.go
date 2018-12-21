@@ -1,24 +1,60 @@
 package main
 
 import (
+	"os"
 	"fmt"
+	"os/signal"
+	"syscall"
+	"runtime"
+
 	"./state"
 	"./message"
-	"./domophone"
+	"./omega2"
+	"./omega2/gpio"
 	"./network"
+
 )
 
 func main() {
 	var err error
+
+	// инициализация omega2
+	if err = omega2.InitDevice(); err != nil {
+		panic(err)
+	}
+
+	// GPIO осущ. открытие двери, снятие трубки, индикация питания
+	// Порт отвечает за эмитаци. поднятия трубки
+	var controlPhone = &gpio.Out{PinNumber: "15"}
+	// Порт отвечает за открытие двери
+	var controlDoor  = &gpio.Out{PinNumber: "16"}
+	// Порт отвечает за индикацию питания (работы программы)
+	var ledPower = &gpio.Out{PinNumber: "18"}
+
+	// Инициализирую GPIO-порты
+	controlPhone.Init()
+	controlDoor.Init()
+	ledPower.Init()
+	defer controlDoor.Uinit()
+	defer controlPhone.Uinit()
+	defer ledPower.Uinit()
+	// зажигаем светодиод - показываем что программа работает
+	ledPower.HIGH()
+
+	// детектирование изменение GPIO - на предмет вызова
+	var сallDetect = &omega2.CallDetect{PinNumber: "17"}
+	if err = сallDetect.Init(); err != nil {
+		panic(err)
+	}
+	defer сallDetect.Uinit()
+
+
 	// Подключаемся вебсокетом к серверу
 	var websocket = network.WebsocketClient{}
-	err = websocket.WSOpen("localhost:8080")
-	if err != nil {
+	if err = websocket.WSOpen("localhost:8080"); err != nil {
 		fmt.Println("websocket:", err)
 	}
 
-	var controlPhone = &domophone.ControlPhone{}
-	var controlDoor  = &domophone.ControlDoor{}
 
 	// Описывается конечный автомат состояний устройства.
 	// состояние ожидание вызова
@@ -33,7 +69,6 @@ func main() {
 	var openDoor = &state.OpenDoor{ControlDoor: controlDoor}
 	// состояние закрыть дверь
 	var closeDoor = &state.CloseDoor{ControlDoor: controlDoor}
-
 	// Связывание конечного автомата 
 	// с ожидания -> на вызов, либо -> опять на ожидание 
 	waitCall.Init(startCall)
@@ -48,21 +83,33 @@ func main() {
 	// положить трубку -> только на ожидание
 	downPhone.Init(waitCall)
 
-	// детектирование изменение GPIO - на предмет вызова
-	сallDetect := &domophone.CallDetect{}
-	сallDetect.Init(10)
+
+	// сигнал завершения работы программы
+	osSignals := make(chan os.Signal)
+	signal.Notify(osSignals, os.Interrupt, syscall.SIGINT)
+	signal.Notify(osSignals, os.Interrupt, syscall.SIGTERM)
+
 
 	// Начальное состояние - ожидание вызова
 	var currentState state.State = waitCall
-	for {
+	// Запускаю детектирование вызова
+	сallDetect.Run()
+
+	var isRunning = true
+	for isRunning {
 		var msg  message.Message
 		select {
 			// состояние домофонной линии: есть вызов или нет
-			case msg = <- сallDetect.State:
+			case msg = <- сallDetect.State: {}
 			// получение информации от сервера
-			case msg = <- websocket.RecvData:
+			case msg = <- websocket.RecvData: {}
+			// завершаем работу программы -  по сигналу (из терминала) пользователя
+			case <- osSignals:
+				isRunning = false
 		}
-		fmt.Println(">>>")
-		currentState, _ = currentState.Do(msg)	
+		if msg != nil {
+			currentState, _ = currentState.Do(msg)
+		}
+		runtime.Gosched()
 	}
 }

@@ -4,11 +4,11 @@ package state
 
 import (
 	"../message"
-	"../domophone"
+	"../omega2/gpio"
 )
 
 type UpPhone struct{
-	ControlPhone *domophone.ControlPhone
+	ControlPhone *gpio.Out
 
 	stateOpenDoor  *OpenDoor
 	stateDownPhone *DownPhone
@@ -24,6 +24,7 @@ func (self *UpPhone) Do(msg message.Message) (State, error) {
 	//	lineMsg := message.MessageDomophoneLine{}
 	//	json.Unmarshal(msg.Data, &lineMsg)
 	//}
+	self.ControlPhone.HIGH()
 	return nil, nil
 }
 

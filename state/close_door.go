@@ -2,12 +2,12 @@ package state
 
 import (
 	"../message"
-	"../domophone"
+	"../omega2/gpio"
 )
 
 type CloseDoor struct {
 	closing bool
-	ControlDoor *domophone.ControlDoor
+	ControlDoor *gpio.Out
 
 	stateDownPhone  *DownPhone
 }
@@ -19,7 +19,7 @@ func (self *CloseDoor) Init (downPhone *DownPhone) {
 
 // закрыть дверь
 func (self *CloseDoor) Do(msg message.Message) (State, error) {
-	self.ControlDoor.Close()
+	self.ControlDoor.LOW()
 	return self.stateDownPhone, nil
 }
 
