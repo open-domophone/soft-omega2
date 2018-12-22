@@ -20,7 +20,7 @@ func (self *StartCall) Init (answer *UpPhone, wait *WaitCall) {
 }
 
 
-func (self *StartCall) Do(msg message.Message) (State, error) {
+func (self *StartCall) Do(request message.Message) (State, *message.Communication, error) {
 	var state State = self
 	fmt.Println("Идет вызов, уведомляем пользователя и ждем действий от него (состояние: StartCall)")	
 		
@@ -29,6 +29,6 @@ func (self *StartCall) Do(msg message.Message) (State, error) {
 
 	// переход обртно, временно для тестов
 	state = self.stateWait
-	return state, nil
+	return state, nil, nil
 }
 

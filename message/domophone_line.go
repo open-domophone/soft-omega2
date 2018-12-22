@@ -5,6 +5,7 @@ const (
 	LINE_CALL
 )
 
+// статус линии домофона - есть вызов или нет
 type DomophoneLine struct {
-	State int `json:"state"`
+	State int
 }

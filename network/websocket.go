@@ -13,15 +13,15 @@ type WebsocketClient struct {
 	Option   *settings.Option
 
 	conn   *websocket.Conn
-	// канал для передачи данных внутрь системы
+	// В канал публикуются данные, полученные от сервера
 	RecvData  chan message.Message
-	// канал в который запишутся данные, которые требуется опубликовать
+	// канал для данных, которые требуется отправить на сервер
 	SendData  chan message.Message 
 }
 
 
-func (self* WebsocketClient) read() {
-
+func (self* WebsocketClient) start() {
+	// прием сообщений от сервера
 	go func() {
 		for {
 			_, message, err := self.conn.ReadMessage()
@@ -33,18 +33,19 @@ func (self* WebsocketClient) read() {
 			self.RecvData <- "HELLO"
 			_ = message
 		}
-
 	}()
-
-	for {
-		select {
-			case msg := <- self.SendData:
+	// отправка сообщений на сервер
+	go func () {
+		for {
+			select {
+			case msg := <-self.SendData:
 				fmt.Println("send data")
 				text := "Hello world"
 				self.conn.WriteMessage(websocket.TextMessage, []byte(text))
 				_ = msg
+			}
 		}
-	}
+	}()
 }
 
 func (self* WebsocketClient) WSOpen() (error) {
@@ -62,8 +63,8 @@ func (self* WebsocketClient) WSOpen() (error) {
 	self.RecvData = make(chan message.Message, 5)
 	self.SendData = make(chan message.Message, 5)
 
-	// запускаю ридер
-	go self.read()
+	// запускаю ридер/врайтер
+	self.start()
 	
 	return err
 }

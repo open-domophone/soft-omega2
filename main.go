@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"fmt"
 	"os/signal"
 	"syscall"
 	"runtime"
@@ -12,21 +13,29 @@ import (
 	"./omega2/gpio"
 	"./network"
 	"./settings"
-
 )
 
 func main() {
 	var err error
 	var option *settings.Option
+	// чтение конфиг-файла
+	if option, err = settings.Load(); err != nil {
+		panic(err)
+	}
+
 	// инициализация omega2
 	if err = omega2.InitDevice(); err != nil {
 		panic(err)
 	}
 
-	if option, err = settings.Load(); err != nil {
+
+
+	var serialPort = &omega2.SerialPort{PortName: settings.SERIAL_PORT,
+											BaudRate: settings.SERIAL_BOUDRATE,
+											BuffSize: settings.SERIAL_BUFSIZE}
+	if err = serialPort.Open(); err != nil {
 		panic(err)
 	}
-
 	// GPIO осущ. открытие двери, снятие трубки, индикация питания
 	// Порт отвечает за эмитаци. поднятия трубки
 	var controlPhone = &gpio.Out{PinNumber: settings.GPIO_CONTROL_PHONE}
@@ -99,18 +108,26 @@ func main() {
 
 	var isRunning = true
 	for isRunning {
-		var msg  message.Message
+		var request  message.Message
+		var response *message.Communication
 		select {
 			// состояние домофонной линии: есть вызов или нет
-			case msg = <- сallDetect.State: {}
+			case request = <- сallDetect.State: {}
 			// получение информации от сервера
-			case msg = <- websocket.RecvData: {}
+			case request = <- websocket.RecvData: {}
 			// завершаем работу программы -  по сигналу (из терминала) пользователя
 			case <- osSignal:
 				isRunning = false
 		}
-		if msg != nil {
-			currentState, _ = currentState.Do(msg)
+		if request != nil {
+			currentState, response, err = currentState.Do(request)
+			if err != nil {
+				fmt.Println(err)
+			}
+			// отправляем ответ по вебсокету
+			if response != nil {
+				websocket.SendData <- response
+			}
 		}
 		runtime.Gosched()
 	}

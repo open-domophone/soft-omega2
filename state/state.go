@@ -6,6 +6,6 @@ import (
 
 // Интерфейс, для описания состояния
 type State interface {
-	Do(msg message.Message) (State, error)
+	Do(request message.Message) (State, *message.Communication, error)
 }
 

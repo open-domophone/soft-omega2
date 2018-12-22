@@ -18,8 +18,8 @@ func (self *CloseDoor) Init (downPhone *DownPhone) {
 }
 
 // закрыть дверь
-func (self *CloseDoor) Do(msg message.Message) (State, error) {
+func (self *CloseDoor) Do(request message.Message) (State, *message.Communication, error) {
 	self.ControlDoor.LOW()
-	return self.stateDownPhone, nil
+	return self.stateDownPhone, nil, nil
 }
 

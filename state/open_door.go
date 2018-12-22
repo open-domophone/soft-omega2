@@ -17,8 +17,8 @@ func (self *OpenDoor) Init (closeDoor *CloseDoor) {
 }
 
 // открываем дверь и тут-же "закрываем"
-func (self *OpenDoor) Do(msg message.Message) (State, error) {
+func (self *OpenDoor) Do(request message.Message) (State, *message.Communication, error) {
 	self.ControlDoor.HIGH()
-	return self.stateCloseDoor, nil
+	return self.stateCloseDoor, nil, nil
 }
 

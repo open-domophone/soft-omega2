@@ -19,9 +19,9 @@ func (self *DownPhone) Init (waitCall *WaitCall) {
 }
 
 // Опустить трубку и перейти и в ожидание
-func (self *DownPhone) Do(msg message.Message) (State, error) {
+func (self *DownPhone) Do(request message.Message) (State, *message.Communication, error) {
 	var state State = self.stateWaitCall
 	self.ControlPhone.LOW()
-	return state, nil
+	return state, nil, nil
 }
 

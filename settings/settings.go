@@ -9,14 +9,20 @@ import (
 
 // Заданы GPIO-порты для управления устройством
 const (
-	GPIO_CONTROL_PHONE = "15"
-	GPIO_CONTROL_DOOR  = "16"
-	GPIO_DETECT_CALL   = "17"
-	GPIO_LED_POWER     = "18"
+	GPIO_CONTROL_PHONE 	= "15"
+	GPIO_CONTROL_DOOR 	= "16"
+	GPIO_DETECT_CALL   	= "17"
+	GPIO_LED_POWER     	= "18"
 )
 
 const (
-	CONFIG_PATH        = "/root/config.xml"
+	CONFIG_PATH        	= "/root/config.xml"
+)
+
+const (
+	SERIAL_PORT		   	= "/dev/ttyS1"
+	SERIAL_BOUDRATE	   	= 115200
+	SERIAL_BUFSIZE		= 256
 )
 
 
