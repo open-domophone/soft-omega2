@@ -6,10 +6,12 @@ import (
 	"github.com/gorilla/websocket"
 
 	"../message"
+	"../settings"
 )
 
 type WebsocketClient struct {
-	urladdr string
+	Option   *settings.Option
+
 	conn   *websocket.Conn
 	// канал для передачи данных внутрь системы
 	RecvData  chan message.Message
@@ -45,9 +47,9 @@ func (self* WebsocketClient) read() {
 	}
 }
 
-func (self* WebsocketClient) WSOpen(addr string) (error) {
+func (self* WebsocketClient) WSOpen() (error) {
 	// Открытие вебсокета и инициализация соединения
-	u := url.URL{Scheme: "ws", Host: addr, Path: "/control"}
+	u := url.URL{Scheme: "ws", Host: self.Option.ServerAddr, Path: "/"}
 	
 	fmt.Println("connect: ", u)
 
@@ -57,7 +59,6 @@ func (self* WebsocketClient) WSOpen(addr string) (error) {
 	}
 
 	self.conn = c
-	self.urladdr = u.String()
 	self.RecvData = make(chan message.Message, 5)
 	self.SendData = make(chan message.Message, 5)
 

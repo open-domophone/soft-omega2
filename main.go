@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"fmt"
 	"os/signal"
 	"syscall"
 	"runtime"
@@ -12,24 +11,29 @@ import (
 	"./omega2"
 	"./omega2/gpio"
 	"./network"
+	"./settings"
 
 )
 
 func main() {
 	var err error
-
+	var option *settings.Option
 	// инициализация omega2
 	if err = omega2.InitDevice(); err != nil {
 		panic(err)
 	}
 
+	if option, err = settings.Load(); err != nil {
+		panic(err)
+	}
+
 	// GPIO осущ. открытие двери, снятие трубки, индикация питания
 	// Порт отвечает за эмитаци. поднятия трубки
-	var controlPhone = &gpio.Out{PinNumber: "15"}
+	var controlPhone = &gpio.Out{PinNumber: settings.GPIO_CONTROL_PHONE}
 	// Порт отвечает за открытие двери
-	var controlDoor  = &gpio.Out{PinNumber: "16"}
+	var controlDoor  = &gpio.Out{PinNumber: settings.GPIO_CONTROL_DOOR}
 	// Порт отвечает за индикацию питания (работы программы)
-	var ledPower = &gpio.Out{PinNumber: "18"}
+	var ledPower = &gpio.Out{PinNumber: settings.GPIO_LED_POWER}
 
 	// Инициализирую GPIO-порты
 	controlPhone.Init()
@@ -42,19 +46,17 @@ func main() {
 	ledPower.HIGH()
 
 	// детектирование изменение GPIO - на предмет вызова
-	var сallDetect = &omega2.CallDetect{PinNumber: "17"}
+	var сallDetect = &omega2.CallDetect{PinNumber: settings.GPIO_DETECT_CALL}
 	if err = сallDetect.Init(); err != nil {
 		panic(err)
 	}
 	defer сallDetect.Uinit()
 
-
 	// Подключаемся вебсокетом к серверу
-	var websocket = network.WebsocketClient{}
-	if err = websocket.WSOpen("localhost:8080"); err != nil {
-		fmt.Println("websocket:", err)
+	var websocket = network.WebsocketClient{Option: option}
+	if err = websocket.WSOpen(); err != nil {
+		panic(err)
 	}
-
 
 	// Описывается конечный автомат состояний устройства.
 	// состояние ожидание вызова
@@ -85,9 +87,9 @@ func main() {
 
 
 	// сигнал завершения работы программы
-	osSignals := make(chan os.Signal)
-	signal.Notify(osSignals, os.Interrupt, syscall.SIGINT)
-	signal.Notify(osSignals, os.Interrupt, syscall.SIGTERM)
+	osSignal := make(chan os.Signal)
+	signal.Notify(osSignal, os.Interrupt, syscall.SIGINT)
+	signal.Notify(osSignal, os.Interrupt, syscall.SIGTERM)
 
 
 	// Начальное состояние - ожидание вызова
@@ -104,7 +106,7 @@ func main() {
 			// получение информации от сервера
 			case msg = <- websocket.RecvData: {}
 			// завершаем работу программы -  по сигналу (из терминала) пользователя
-			case <- osSignals:
+			case <- osSignal:
 				isRunning = false
 		}
 		if msg != nil {

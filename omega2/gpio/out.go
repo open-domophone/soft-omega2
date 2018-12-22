@@ -1,8 +1,8 @@
 package gpio
 
 import (
-	"periph.io/x/periph/conn/gpio/gpioreg"
 	"periph.io/x/periph/conn/gpio"
+	"periph.io/x/periph/conn/gpio/gpioreg"
 )
 
 // Управление дверью

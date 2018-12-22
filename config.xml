@@ -1,0 +1,5 @@
+<option>
+    <login>user</login>
+    <password>user</password>
+    <serveraddr>192.168.0.103:9090</serveraddr>
+</option>

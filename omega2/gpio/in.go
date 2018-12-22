@@ -14,8 +14,6 @@ type In struct {
 
 func (self *In) Init() error {
 	self.pin = gpioreg.ByName(self.PinNumber) // Get GPIO
-	//if err := self.pin.In(gpio.PullDown, gpio.RisingEdge); err != nil {
-	//if err := self.pin.In(gpio.PullNoChange, gpio.NoEdge); err != nil { // work
 	if err := self.pin.In(gpio.Float, gpio.NoEdge); err != nil {
 		return err
 	}
