@@ -1,11 +1,11 @@
 package omega2
 
 import (
-	"io"
 	"fmt"
 	"runtime"
 
-	"github.com/jacobsa/go-serial/serial"
+	"github.com/tarm/serial"
+	//"github.com/jacobsa/go-serial/serial"
 	"../message"
 )
 
@@ -14,10 +14,12 @@ import (
 // stm32 выполняет функции АЦП/ЦАП - получает и подает аудиоданные от/в линию домофона
 type SerialPort struct {
 	PortName 	string
-	BaudRate 	uint
+	BaudRate 	int
 	BuffSize 	int
 
-	port 		io.ReadWriteCloser
+	config 		*serial.Config
+	port 		*serial.Port
+	//port 		io.ReadWriteCloser
 	// В канал публикуются данные, полученные от сервера
 	RecvData  	chan message.Message
 	// канал для данных, которые требуется отправить на сервер
@@ -29,6 +31,7 @@ func (self *SerialPort) start() {
 	go func () {
 		for {
 			buf := make([]byte, self.BuffSize)
+
 			n, err := self.port.Read(buf)
 			if err != nil {
 				fmt.Println(err)
@@ -53,17 +56,23 @@ func (self *SerialPort) start() {
 }
 
 func (self *SerialPort) Open() error {
-	options := serial.OpenOptions{
-		PortName: self.PortName,
-		BaudRate: self.BaudRate,
-		//DataBits: 8,
-		//StopBits: 1,
-		//MinimumReadSize: 4,
-	}
-	p, err := serial.Open(options)
-	if err != nil {
+	var err error
+	self.config = &serial.Config{Name: self.PortName, Baud: self.BaudRate}
+
+	if self.port, err = serial.OpenPort(self.config); err != nil {
 		return err
 	}
-	self.port = p
+	//options := serial.OpenOptions{
+	//	PortName: self.PortName,
+	//	BaudRate: self.BaudRate,
+	//	//DataBits: 8,
+	//	//StopBits: 1,
+	//	//MinimumReadSize: 4,
+	//}
+	//p, err := serial.Open(options)
+	//if err != nil {
+	//	return err
+	//}
+	//self.port = p
 	return nil
 }
