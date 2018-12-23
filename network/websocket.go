@@ -40,8 +40,8 @@ func (self* WebsocketClient) start() {
 			select {
 			case msg := <-self.SendData:
 				fmt.Println("send data")
-				text := "Hello world"
-				self.conn.WriteMessage(websocket.TextMessage, []byte(text))
+				//text := "Hello world"
+				//self.conn.WriteMessage(websocket.TextMessage, []byte(text))
 				_ = msg
 			}
 		}
