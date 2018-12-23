@@ -5,12 +5,11 @@ import (
 	"runtime"
 
 	"github.com/tarm/serial"
-	//"github.com/jacobsa/go-serial/serial"
 	"../message"
 )
 
 
-// Srial-интерфейс необходим для взаимодействия с stm32
+// Serial-интерфейс необходим для взаимодействия с stm32
 // stm32 выполняет функции АЦП/ЦАП - получает и подает аудиоданные от/в линию домофона
 type SerialPort struct {
 	PortName 	string
@@ -62,17 +61,5 @@ func (self *SerialPort) Open() error {
 	if self.port, err = serial.OpenPort(self.config); err != nil {
 		return err
 	}
-	//options := serial.OpenOptions{
-	//	PortName: self.PortName,
-	//	BaudRate: self.BaudRate,
-	//	//DataBits: 8,
-	//	//StopBits: 1,
-	//	//MinimumReadSize: 4,
-	//}
-	//p, err := serial.Open(options)
-	//if err != nil {
-	//	return err
-	//}
-	//self.port = p
 	return nil
 }

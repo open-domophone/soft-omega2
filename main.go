@@ -28,14 +28,15 @@ func main() {
 		panic(err)
 	}
 
-
-
+	// Serial port
 	var serialPort = &omega2.SerialPort{PortName: settings.SERIAL_PORT,
 											BaudRate: settings.SERIAL_BOUDRATE,
 											BuffSize: settings.SERIAL_BUFSIZE}
 	if err = serialPort.Open(); err != nil {
 		panic(err)
 	}
+
+
 	// GPIO осущ. открытие двери, снятие трубки, индикация питания
 	// Порт отвечает за эмитаци. поднятия трубки
 	var controlPhone = &gpio.Out{PinNumber: settings.GPIO_CONTROL_PHONE}
